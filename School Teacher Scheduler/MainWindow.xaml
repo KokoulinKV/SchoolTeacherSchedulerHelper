@@ -46,14 +46,14 @@
                 <RowDefinition Height="127*" />
                 <RowDefinition Height="93*" />
             </Grid.RowDefinitions>
-            <DatePicker Style="{DynamicResource MyDatePickerStyle}" Name="datePickerStart" Focusable="False" Grid.Row="0" Margin="142,6,20,28">
+            <DatePicker Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource CalendarStyle1}" Name="datePickerStart" Focusable="False" Grid.Row="0" Margin="142,6,20,28">
                 <DatePicker.Resources>
                     <Style TargetType="{x:Type DatePickerTextBox}">
                         <EventSetter Event="MouseLeftButtonUp" Handler="OnMouseLeftButtonUpDateStart" />
                     </Style>
                 </DatePicker.Resources>
             </DatePicker>
-            <DatePicker Style="{DynamicResource MyDatePickerStyle}" x:Name="datePickerEnd" Focusable="False" Grid.Row="0" Margin="142,37,20,3">
+            <DatePicker Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource CalendarStyle1}" x:Name="datePickerEnd" Focusable="False" Grid.Row="0" Margin="142,37,20,3">
                 <DatePicker.Resources>
                     <Style TargetType="{x:Type DatePickerTextBox}">
                         <EventSetter Event="UIElement.MouseLeftButtonUp" Handler="OnMouseLeftButtonUpDateEnd" />
@@ -62,7 +62,7 @@
             </DatePicker>
             <TextBlock x:Name="dateStart" HorizontalAlignment="Left" Margin="10,13,0,0" TextWrapping="NoWrap" Text="Дата начала:" VerticalAlignment="Top" Height="20" Width="96" FontFamily="Verdana" />
             <TextBlock x:Name="dateEnd" HorizontalAlignment="Left" TextWrapping="NoWrap" Text="Дата окончания:" VerticalAlignment="Top" Height="20" Margin="10,44,0,0" Width="114" FontFamily="Verdana" />
-            <ListBox x:Name="dateList" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,10,25,10" Grid.Row="1" Background="#FF15181C" Foreground="White" />
+            <ListBox Style="{DynamicResource ListBoxStyle1}" x:Name="dateList" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,10,25,10" Grid.Row="1" Background="#FF15181C" Foreground="White" />
             <Grid Grid.Row="2" Margin="0,3,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition />

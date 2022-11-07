@@ -16,11 +16,4 @@
     <Resource Include="Themes\calendar_icon2.png" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Page Update="Themes\generic - Copy.xaml">
-      <XamlRuntime>$(DefaultXamlRuntime)</XamlRuntime>
-      <SubType>Designer</SubType>
-    </Page>
-  </ItemGroup>
-
 </Project>
