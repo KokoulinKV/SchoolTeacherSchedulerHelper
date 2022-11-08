@@ -9,11 +9,11 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Themes\calendar_icon2.png" />
+    <None Remove="Styles\calendar_icon2.png" />
   </ItemGroup>
 
   <ItemGroup>
-    <Resource Include="Themes\calendar_icon2.png" />
+    <Resource Include="Styles\Assets\calendar_icon2.png" />
   </ItemGroup>
 
 </Project>

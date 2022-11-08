@@ -5,13 +5,14 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:School_Teacher_Scheduler"
         mc:Ignorable="d"
-        Title="Помощник календарного планирования" Height="350" Width="450" ResizeMode="NoResize" Style="{DynamicResource WindowStyle}">
+        Title="Помощник календарного планирования"
+        Height="350" Width="450" ResizeMode="NoResize"
+        Style="{DynamicResource WindowStyle}">
     <Window.Resources>
         <ResourceDictionary>
-            <!-- Believe it or not the next line fixes a bug MS acknowledges -->
             <Style TargetType="{x:Type Rectangle}" />
             <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="/Themes/generic.XAML" />
+                <ResourceDictionary Source="/Styles/MainStyle.XAML" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -34,7 +35,9 @@
                     <CheckBox x:Name="fri" Content="Пятница" HorizontalAlignment="Left" Margin="0,80,0,0" VerticalAlignment="Top" FontFamily="Verdana" />
                     <CheckBox x:Name="sat" Content="Суббота" HorizontalAlignment="Left" Margin="0,100,0,0" VerticalAlignment="Top" FontFamily="Verdana" />
                 </Grid>
-                <TextBlock x:Name="days" HorizontalAlignment="Left" TextWrapping="NoWrap" Text="Дни недели:" VerticalAlignment="Top" Height="20" Width="106" FontFamily="Verdana" />
+                <TextBlock x:Name="days" Text="Дни недели:"
+                           Height="20" Width="106" FontFamily="Verdana"
+                           HorizontalAlignment="Left"  VerticalAlignment="Top"  TextWrapping="NoWrap" />
             </Grid>
         </Grid>
         <Grid Grid.Column="1" Grid.Row="0" Margin="5,10,0,0">
@@ -46,32 +49,52 @@
                 <RowDefinition Height="127*" />
                 <RowDefinition Height="93*" />
             </Grid.RowDefinitions>
-            <DatePicker Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource CalendarStyle1}" Name="datePickerStart" Focusable="False" Grid.Row="0" Margin="142,6,20,28">
+            <DatePicker Name="datePickerStart" Grid.Row="0" Margin="142,6,20,28" Focusable="False"
+                        Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource MyCalendarStyle}">
                 <DatePicker.Resources>
                     <Style TargetType="{x:Type DatePickerTextBox}">
-                        <EventSetter Event="MouseLeftButtonUp" Handler="OnMouseLeftButtonUpDateStart" />
+                        <EventSetter Event="MouseLeftButtonUp" Handler="onMouseLeftButtonUpDateStart" />
                     </Style>
                 </DatePicker.Resources>
             </DatePicker>
-            <DatePicker Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource CalendarStyle1}" x:Name="datePickerEnd" Focusable="False" Grid.Row="0" Margin="142,37,20,3">
+            <DatePicker  x:Name="datePickerEnd" Grid.Row="0" Margin="142,37,20,3" Focusable="False"
+                         Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource MyCalendarStyle}">
                 <DatePicker.Resources>
                     <Style TargetType="{x:Type DatePickerTextBox}">
-                        <EventSetter Event="UIElement.MouseLeftButtonUp" Handler="OnMouseLeftButtonUpDateEnd" />
+                        <EventSetter Event="UIElement.MouseLeftButtonUp" Handler="onMouseLeftButtonUpDateEnd" />
                     </Style>
                 </DatePicker.Resources>
             </DatePicker>
-            <TextBlock x:Name="dateStart" HorizontalAlignment="Left" Margin="10,13,0,0" TextWrapping="NoWrap" Text="Дата начала:" VerticalAlignment="Top" Height="20" Width="96" FontFamily="Verdana" />
-            <TextBlock x:Name="dateEnd" HorizontalAlignment="Left" TextWrapping="NoWrap" Text="Дата окончания:" VerticalAlignment="Top" Height="20" Margin="10,44,0,0" Width="114" FontFamily="Verdana" />
-            <ListBox Style="{DynamicResource ListBoxStyle1}" x:Name="dateList" d:ItemsSource="{d:SampleData ItemCount=5}" Margin="10,10,25,10" Grid.Row="1" Background="#FF15181C" Foreground="White" />
+            <TextBlock x:Name="dateStart" Text="Дата начала:"
+                       Height="20" Width="96" FontFamily="Verdana"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="10,13,0,0" />
+            <TextBlock x:Name="dateEnd" Text="Дата окончания:"
+                       Height="20"  Width="114" FontFamily="Verdana"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="10,44,0,0" />
+            <ListBox x:Name="dateList"  Grid.Row="1"
+                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                     Margin="10,10,25,10"
+                     Style="{DynamicResource MyListBoxStyle}" />
             <Grid Grid.Row="2" Margin="0,3,0,0">
                 <Grid.RowDefinitions>
                     <RowDefinition />
                     <RowDefinition />
                 </Grid.RowDefinitions>
-                <Button x:Name="getDates" Content="Вывести список дат"  HorizontalAlignment="Center" VerticalAlignment="Top" Click="getDates_Click" RenderTransformOrigin="0.451,-0.266"  Grid.Row="0" Margin="-15,4,0,0" FontFamily="Verdana" Height="28" Width="182" />
-                <Button x:Name="copyDates" Content="Копировать даты"  HorizontalAlignment="Center" VerticalAlignment="Top" Click="copyDates_Click"  RenderTransformOrigin="0.488,-0.149" Grid.Row="1"  Margin="-15,5,0,0" IsEnabled="False" FontFamily="Verdana" Height="28" Width="162" />
+                <Button x:Name="getDates" Content="Вывести список дат" Grid.Row="0"
+                        Height="28" Width="182" FontFamily="Verdana"
+                        Click="getDates_Click"
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
+                        RenderTransformOrigin="0.451,-0.266" Margin="-15,4,0,0" />
+                <Button x:Name="copyDates" Content="Копировать даты" Grid.Row="1"
+                        Height="28" Width="162" FontFamily="Verdana"
+                        Click="copyDates_Click" IsEnabled="False"
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
+                        RenderTransformOrigin="0.488,-0.149" Margin="-15,5,0,0" />
             </Grid>
         </Grid>
-        <TextBlock x:Name="author" HorizontalAlignment="Left" TextWrapping="NoWrap" Text="Author: jefferyco@yandex.ru" VerticalAlignment="Bottom" Height="20" Width="430" FontFamily="Verdana" Foreground="Gray" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1" Margin="-5,0,0,-12" />
+        <TextBlock x:Name="author" Text="Author: jefferyco@yandex.ru" Grid.Column="0" Grid.ColumnSpan="2" Grid.Row="1"
+                   Height="20" Width="430" FontFamily="Verdana" Foreground="Gray"
+                   HorizontalAlignment="Left"   VerticalAlignment="Bottom" TextWrapping="NoWrap"
+                   Margin="-5,0,0,-12" />
     </Grid>
 </Window>

@@ -2,17 +2,9 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace School_Teacher_Scheduler
 {
@@ -21,48 +13,61 @@ namespace School_Teacher_Scheduler
     /// </summary>
     public partial class MainWindow : Window
     {
+        /// <summary>
+        /// Список выбранных дней недели
+        /// </summary>
         private readonly List<DayOfWeek> DaysOfWeek = new();
 
+        /// <summary>
+        /// Чекбоксы дней недели
+        /// </summary>
         private List<CheckBox> CheckBoxesDaysOfWeek = new();
 
+        /// <summary>
+        /// Список полученных дат
+        /// </summary>
         private List<string> ResultDates = new();
 
+        /// <summary>
+        /// Событие закрытия окна
+        /// </summary>
+        public event Action? CloseWindowEvent;
+
+        /// <summary>
+        /// Конструктор главного окна приложения
+        /// </summary>
         public MainWindow()
         {
             InitializeComponent();
             CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindow));
-            //SetTheme();
 
             CheckBoxesDaysOfWeek = new List<CheckBox> { mon, tue, wed, thur, fri, sat };
         }
 
-        public event Action CloseWindowEvent;
-
-        private void CloseWindow(object sender, ExecutedRoutedEventArgs e)
-        {
-            if (null != CloseWindowEvent)
-            {
-                CloseWindowEvent();
-            }
-            this.Close();
-        }
-
-        private void OnMouseLeftButtonUpDateStart(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Обработчик события нажатия кнопки открытия календаря выбора даты начала
+        /// </summary>
+        private void onMouseLeftButtonUpDateStart(object sender, RoutedEventArgs e)
         {
             datePickerStart.IsDropDownOpen = true;
         }
 
-        private void OnMouseLeftButtonUpDateEnd(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Обработчик события нажатия кнопки открытия календаря выбора даты окончания
+        /// </summary>
+        private void onMouseLeftButtonUpDateEnd(object sender, RoutedEventArgs e)
         {
             datePickerEnd.IsDropDownOpen = true;
         }
 
+        /// <summary>
+        /// Обработчик события нажатия кнопки получения списка дат
+        /// </summary>
         private void getDates_Click(object sender, RoutedEventArgs e)
         {
             if (datePickerStart.SelectedDate is null || datePickerEnd.SelectedDate is null)
             {
-                var time = CheckDatesFilled();
-                MessageBox.Show($"Не указана дата {time}!", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                ShowEmptyDatesDialog();
                 return;
             }
 
@@ -90,11 +95,46 @@ namespace School_Teacher_Scheduler
             copyDates.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Обработчик нажатия на клавишу копирования списка дат
+        /// </summary>
+        private void copyDates_Click(object sender, RoutedEventArgs e)
+        {
+            var text = string.Empty;
+            foreach (var date in ResultDates)
+            {
+                text = $"{text}{date}\r\n";
+            }
+            Clipboard.SetText(text);
+        }
+
+        /// <summary>
+        /// Метод вызывающий диалоговое окно об ошибке,
+        /// в случае попытки получения списка дат при не выбранном(ых) значении границы календарного периода
+        /// </summary>
+        private void ShowEmptyDatesDialog()
+        {
+            var dateBoundaryForDialog = datePickerStart.SelectedDate is null
+                ? "начала"
+                : datePickerEnd.SelectedDate is null
+                    ? "оконачания"
+                    : string.Empty;
+            DialogWindow.Show($"Не указана дата {dateBoundaryForDialog}!", "Ошибка", MessageBoxButton.OK);
+        }
+
+        /// <summary>
+        /// Метод получения даты в виде строки в формате dd.MM.yyyy
+        /// </summary>
+        /// <param name="date">Дата</param>
+        /// <returns>Дата в строковом виде</returns>
         private string GetDateOnlyString(DateTime date)
         {
             return date.Date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
 
+        /// <summary>
+        /// Обновление списка выбранных дней недели
+        /// </summary>
         private void UpdateCheckedDaysOfWeekList()
         {
             DaysOfWeek.Clear();
@@ -130,11 +170,33 @@ namespace School_Teacher_Scheduler
             }
         }
 
+        /// <summary>
+        /// Метод зактрытия окна
+        /// </summary>
+        private void CloseWindow(object sender, ExecutedRoutedEventArgs e)
+        {
+            if (CloseWindowEvent != null)
+            {
+                CloseWindowEvent();
+            }
+            this.Close();
+        }
+
+        /// <summary>
+        /// Генератор списка дат в заданном календарном промежутке
+        /// </summary>
+        /// <param name="startDate">Дата начала интервала</param>
+        /// <param name="endDate">Дата окончания интервала</param>
+        /// <returns>Список дат</returns>
         private static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
         {
             if (endDate < startDate)
             {
-                MessageBox.Show($"Дата окончания не может опережать дату начала:\r\nДата начала: {startDate}\r\nДата окончания: {endDate}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                DialogWindow.Show($"Дата окончания не может опережать дату начала!\r\n" +
+                            $"Дата начала: {DateOnly.FromDateTime(startDate)}\r\n" +
+                            $"Дата окончания: {DateOnly.FromDateTime(endDate)}",
+                            "Ошибка",
+                            MessageBoxButton.OK);
                 yield break;
             }
 
@@ -143,25 +205,6 @@ namespace School_Teacher_Scheduler
                 yield return startDate;
                 startDate = startDate.AddDays(1);
             }
-        }
-
-        private void copyDates_Click(object sender, RoutedEventArgs e)
-        {
-            var text = string.Empty;
-            foreach (var date in ResultDates)
-            {
-                text = $"{text}{date}\r\n";
-            }
-            Clipboard.SetText(text);
-        }
-
-        private string CheckDatesFilled()
-        {
-            return datePickerStart.SelectedDate is null
-                ? "начала"
-                : datePickerEnd.SelectedDate is null
-                    ? "оконачания"
-                    : string.Empty;
         }
     }
 }

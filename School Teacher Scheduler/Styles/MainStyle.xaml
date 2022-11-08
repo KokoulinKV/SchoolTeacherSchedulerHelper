@@ -143,14 +143,6 @@
                                                     <Image Source="{TemplateBinding Content}" />
                                                 </ControlTemplate>
                                             </Button.Template>
-                                            <!--<i:Interaction.Triggers>
-                                            <i:EventTrigger EventName="Click">
-                                                <i:InvokeCommandAction Command="{x:Static SystemCommands.ShowSystemMenuCommand}" />
-                                            </i:EventTrigger>
-                                            <i:EventTrigger EventName="MouseDoubleClick">
-                                                <i:InvokeCommandAction Command="{x:Static SystemCommands.CloseWindowCommand}" />
-                                            </i:EventTrigger>
-                                        </i:Interaction.Triggers>-->
                                         </Button>
                                         <ContentControl IsTabStop="False" Foreground="White"
                                                     HorizontalAlignment="Center" VerticalAlignment="Center"
@@ -209,9 +201,6 @@
                     </Border>
 
                     <ControlTemplate.Triggers>
-                        <!--<Trigger Property="IsActive" Value="False">
-                            <Setter Property="BorderBrush" Value="#FF6F7785" />
-                        </Trigger>-->
                         <Trigger Property="WindowState" Value="Maximized">
                             <Setter TargetName="Maximize" Property="Visibility" Value="Collapsed" />
                             <Setter TargetName="Restore" Property="Visibility" Value="Visible" />
@@ -245,7 +234,6 @@
         <Setter Property="Foreground" Value="White" />
         <Setter Property="FontSize" Value="15" />
         <Setter Property="SnapsToDevicePixels" Value="True" />
-
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
@@ -469,7 +457,7 @@
                                                     Height="Auto"
                                                     HorizontalAlignment="Stretch"
                                                     Margin="3"
-                                                    Source="calendar_icon2.png"
+                                                    Source="Assets/calendar_icon2.png"
                                                     Stretch="Fill"
                                                     VerticalAlignment="Stretch"
                                                     Width="{Binding Path=Height, RelativeSource={RelativeSource Mode=Self}}">
@@ -499,8 +487,8 @@
                                 </Grid.ColumnDefinitions>
                                 <Rectangle Grid.Column="0" Fill="#A5FFFFFF" Grid.Row="0" RadiusX="1" RadiusY="1" />
                                 <Rectangle Grid.Column="1" Fill="#A5FFFFFF" Height="18" Margin="3,0,3,0" Grid.Row="0" RadiusX="1" RadiusY="1" Width="19" />
-                                <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom" PlacementTarget="{Binding ElementName=PART_TextBox}" StaysOpen="True">
-                                    <Calendar x:Name="PART_CalendarItem" Style="{DynamicResource CalendarStyle1}" />
+                                <Popup x:Name="PART_Popup" AllowsTransparency="True" Placement="Bottom" PlacementTarget="{Binding ElementName=PART_TextBox}" StaysOpen="False">
+                                    <Calendar x:Name="PART_CalendarItem" Style="{DynamicResource MyCalendarStyle}" />
                                 </Popup>
                             </Grid>
                         </Grid>
@@ -525,13 +513,16 @@
                              VerticalContentAlignment="Center"
                              Padding="5,0,5,0"
                              FontFamily="Verdana"
+                             CaretBrush="White"
+                             Validation.ErrorTemplate="{x:Null}"
+                             Focusable = "False"
                              Background="{x:Null}" />
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style x:Key="CalendarStyle1" TargetType="{x:Type Calendar}">
+    <Style x:Key="MyCalendarStyle" TargetType="{x:Type Calendar}">
         <Setter Property="Background">
             <Setter.Value>
                 <LinearGradientBrush EndPoint=".5,1" StartPoint=".5,0">
@@ -554,14 +545,14 @@
                                       Background="{TemplateBinding Background}"
                                       BorderBrush="{TemplateBinding BorderBrush}"
                                       BorderThickness="{TemplateBinding BorderThickness}"
-                                      Style="{DynamicResource CalendarCalendarItemStyle1}" />
+                                      Style="{DynamicResource MyCalendarCalendarItemStyle}" />
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
     </Style>
 
-    <Style x:Key="CalendarCalendarItemStyle1" TargetType="{x:Type CalendarItem}">
+    <Style x:Key="MyCalendarCalendarItemStyle" TargetType="{x:Type CalendarItem}">
         <Setter Property="Margin" Value="0,3,0,3" />
         <Setter Property="Template">
             <Setter.Value>
@@ -855,15 +846,15 @@
         </Setter>
     </Style>
 
-    <SolidColorBrush x:Key="ListBox.Static.Background" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="ListBox.Static.Background" Color="#FF15181C" />
     <SolidColorBrush x:Key="ListBox.Static.Border" Color="#FFABADB3" />
     <SolidColorBrush x:Key="ListBox.Disabled.Background" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="ListBox.Disabled.Border" Color="#FFD9D9D9" />
-    <Style x:Key="ListBoxStyle1" TargetType="{x:Type ListBox}">
+    <Style x:Key="MyListBoxStyle" TargetType="{x:Type ListBox}">
         <Setter Property="Background" Value="{StaticResource ListBox.Static.Background}" />
         <Setter Property="BorderBrush" Value="{StaticResource ListBox.Static.Border}" />
         <Setter Property="BorderThickness" Value="1" />
-        <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.ControlTextBrushKey}}" />
+        <Setter Property="Foreground" Value="White" />
         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled" />
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Hidden" />
         <Setter Property="ScrollViewer.CanContentScroll" Value="true" />
@@ -873,10 +864,10 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type ListBox}">
-                    <Border x:Name="Bd" Background="{TemplateBinding Background}" 
-                            BorderBrush="{TemplateBinding BorderBrush}" 
-                            BorderThickness="{TemplateBinding BorderThickness}" 
-                            Padding="1" 
+                    <Border x:Name="Bd" Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            Padding="1"
                             SnapsToDevicePixels="true">
                         <ScrollViewer Focusable="false" Padding="{TemplateBinding Padding}">
                             <ItemsPresenter SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
