@@ -5,6 +5,8 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using DAL;
+using Domain;
 
 namespace School_Teacher_Scheduler
 {
@@ -34,14 +36,22 @@ namespace School_Teacher_Scheduler
         public event Action? CloseWindowEvent;
 
         /// <summary>
+        /// Контекст БД
+        /// </summary>
+        private DatabaseContext? Context { get; set; }
+
+        /// <summary>
         /// Конструктор главного окна приложения
         /// </summary>
         public MainWindow()
         {
             InitializeComponent();
+
             CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindow));
 
             CheckBoxesDaysOfWeek = new List<CheckBox> { mon, tue, wed, thur, fri, sat };
+
+            this.Context = new DatabaseContext();
         }
 
         /// <summary>
