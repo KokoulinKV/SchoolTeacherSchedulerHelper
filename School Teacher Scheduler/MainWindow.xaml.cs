@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DAL;
 using Domain;
+using Domain.Dtos;
+using Microsoft.EntityFrameworkCore;
 
 namespace School_Teacher_Scheduler
 {
@@ -52,12 +55,13 @@ namespace School_Teacher_Scheduler
             CheckBoxesDaysOfWeek = new List<CheckBox> { mon, tue, wed, thur, fri, sat };
 
             this.Context = new DatabaseContext();
+            this.Context.Database.Migrate();
         }
 
         /// <summary>
         /// Обработчик события нажатия кнопки открытия календаря выбора даты начала
         /// </summary>
-        private void onMouseLeftButtonUpDateStart(object sender, RoutedEventArgs e)
+        private void OnMouseLeftButtonUpDateStart(object sender, RoutedEventArgs e)
         {
             datePickerStart.IsDropDownOpen = true;
         }
@@ -65,7 +69,7 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик события нажатия кнопки открытия календаря выбора даты окончания
         /// </summary>
-        private void onMouseLeftButtonUpDateEnd(object sender, RoutedEventArgs e)
+        private void OnMouseLeftButtonUpDateEnd(object sender, RoutedEventArgs e)
         {
             datePickerEnd.IsDropDownOpen = true;
         }
@@ -120,7 +124,7 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик нажатия на клавишу копирования списка дат
         /// </summary>
-        private void copyDates_Click(object sender, RoutedEventArgs e)
+        private void CopyDates_Click(object sender, RoutedEventArgs e)
         {
             var text = string.Empty;
             foreach (var date in ResultDates)
@@ -146,7 +150,7 @@ namespace School_Teacher_Scheduler
 
         /// <summary>
         /// Метод вызывающий диалоговое окно об ошибке,
-        /// в случае попытки получения списка дат при не выбранном(ых) днях недели
+        /// в случае попытки получения списка дат при не верно выбранных границах периода планирования
         /// </summary>
         private void ShowWrongPeriodDialog()
         {
