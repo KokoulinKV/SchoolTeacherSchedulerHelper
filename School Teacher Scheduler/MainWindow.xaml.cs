@@ -73,11 +73,25 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик события нажатия кнопки получения списка дат
         /// </summary>
-        private void getDates_Click(object sender, RoutedEventArgs e)
+        private void GetDates_Click(object sender, RoutedEventArgs e)
         {
             if (datePickerStart.SelectedDate is null || datePickerEnd.SelectedDate is null)
             {
                 ShowEmptyDatesDialog();
+                return;
+            }
+
+            if (DateTime.Compare((DateTime)datePickerStart.SelectedDate, (DateTime)datePickerEnd.SelectedDate) > 0)
+            {
+                ShowWrongPeriodDialog();
+                return;
+            }
+
+            UpdateCheckedDaysOfWeekList();
+
+            if (!DaysOfWeek.Any())
+            {
+                ShowEmptyDaysOfWeekDialog();
                 return;
             }
 
@@ -90,8 +104,6 @@ namespace School_Teacher_Scheduler
             {
                 return;
             }
-
-            UpdateCheckedDaysOfWeekList();
 
             foreach (var date in allDatesInPeriod)
             {
@@ -127,9 +139,27 @@ namespace School_Teacher_Scheduler
             var dateBoundaryForDialog = datePickerStart.SelectedDate is null
                 ? "начала"
                 : datePickerEnd.SelectedDate is null
-                    ? "оконачания"
+                    ? "окончания"
                     : string.Empty;
             DialogWindow.Show($"Не указана дата {dateBoundaryForDialog}!", "Ошибка", MessageBoxButton.OK);
+        }
+
+        /// <summary>
+        /// Метод вызывающий диалоговое окно об ошибке,
+        /// в случае попытки получения списка дат при не выбранном(ых) днях недели
+        /// </summary>
+        private void ShowWrongPeriodDialog()
+        {
+            DialogWindow.Show($"Дата конца периода планирования не может опережать дату его начала. ", "Ошибка", MessageBoxButton.OK);
+        }
+
+        /// <summary>
+        /// Метод вызывающий диалоговое окно об ошибке,
+        /// в случае попытки получения списка дат при не выбранном(ых) днях недели
+        /// </summary>
+        private void ShowEmptyDaysOfWeekDialog()
+        {
+            DialogWindow.Show($"Не выбраны дни недели.", "Ошибка", MessageBoxButton.OK);
         }
 
         /// <summary>

@@ -82,7 +82,7 @@
                 </Grid.RowDefinitions>
                 <Button x:Name="getDates" Content="Вывести список дат" Grid.Row="0"
                         Height="28" Width="182" FontFamily="Verdana"
-                        Click="getDates_Click"
+                        Click="GetDates_Click"
                         HorizontalAlignment="Center" VerticalAlignment="Top"
                         RenderTransformOrigin="0.451,-0.266" Margin="-15,4,0,0" />
                 <Button x:Name="copyDates" Content="Копировать даты" Grid.Row="1"
