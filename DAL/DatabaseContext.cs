@@ -1,4 +1,4 @@
-﻿using Domain;
+﻿using Domain.Entities.References;
 using Microsoft.EntityFrameworkCore;
 
 namespace DAL

@@ -1,14 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using DAL;
-using Domain;
-using Domain.Dtos;
+using Domain.Factories;
 using Microsoft.EntityFrameworkCore;
 
 namespace School_Teacher_Scheduler
@@ -19,21 +15,6 @@ namespace School_Teacher_Scheduler
     public partial class MainWindow : Window
     {
         /// <summary>
-        /// Список выбранных дней недели
-        /// </summary>
-        private readonly List<DayOfWeek> DaysOfWeek = new();
-
-        /// <summary>
-        /// Чекбоксы дней недели
-        /// </summary>
-        private List<CheckBox> CheckBoxesDaysOfWeek = new();
-
-        /// <summary>
-        /// Список полученных дат
-        /// </summary>
-        private List<string> ResultDates = new();
-
-        /// <summary>
         /// Событие закрытия окна
         /// </summary>
         public event Action? CloseWindowEvent;
@@ -41,7 +22,12 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Контекст БД
         /// </summary>
-        private DatabaseContext? Context { get; set; }
+        private DatabaseContext? Context;
+
+        /// <summary>
+        /// Активный контрол в TabControl
+        /// </summary>
+        private TabItem _tabUserPage = null!;
 
         /// <summary>
         /// Конструктор главного окна приложения
@@ -49,169 +35,33 @@ namespace School_Teacher_Scheduler
         public MainWindow()
         {
             InitializeComponent();
+            InitializeDatabaseContext();
 
             CommandBindings.Add(new CommandBinding(SystemCommands.CloseWindowCommand, CloseWindow));
 
-            CheckBoxesDaysOfWeek = new List<CheckBox> { mon, tue, wed, thur, fri, sat };
-
-            this.Context = new DatabaseContext();
-            this.Context.Database.Migrate();
+            MainControlRender();
         }
 
         /// <summary>
-        /// Обработчик события нажатия кнопки открытия календаря выбора даты начала
+        /// Метод инициализации контекста базы данных, а также ее создание и наполнение справочников
         /// </summary>
-        private void OnMouseLeftButtonUpDateStart(object sender, RoutedEventArgs e)
+        private void InitializeDatabaseContext()
         {
-            datePickerStart.IsDropDownOpen = true;
-        }
+            Context = new DatabaseContext();
+            Context.Database.Migrate();
 
-        /// <summary>
-        /// Обработчик события нажатия кнопки открытия календаря выбора даты окончания
-        /// </summary>
-        private void OnMouseLeftButtonUpDateEnd(object sender, RoutedEventArgs e)
-        {
-            datePickerEnd.IsDropDownOpen = true;
-        }
+            var daysOffInDataBase = Context.DaysOff.ToList();
+            var daysOffInFactory = DayOffFactory.GenerateDaysOffEntities();
 
-        /// <summary>
-        /// Обработчик события нажатия кнопки получения списка дат
-        /// </summary>
-        private void GetDates_Click(object sender, RoutedEventArgs e)
-        {
-            if (datePickerStart.SelectedDate is null || datePickerEnd.SelectedDate is null)
+            foreach (var dayOff in daysOffInFactory)
             {
-                ShowEmptyDatesDialog();
-                return;
-            }
-
-            if (DateTime.Compare((DateTime)datePickerStart.SelectedDate, (DateTime)datePickerEnd.SelectedDate) > 0)
-            {
-                ShowWrongPeriodDialog();
-                return;
-            }
-
-            UpdateCheckedDaysOfWeekList();
-
-            if (!DaysOfWeek.Any())
-            {
-                ShowEmptyDaysOfWeekDialog();
-                return;
-            }
-
-            dateList.ItemsSource = null;
-            ResultDates.Clear();
-            copyDates.IsEnabled = false;
-
-            var allDatesInPeriod = GetDateRange(datePickerStart.SelectedDate.Value, datePickerEnd.SelectedDate.Value).ToList();
-            if (!allDatesInPeriod.Any())
-            {
-                return;
-            }
-
-            foreach (var date in allDatesInPeriod)
-            {
-                if (DaysOfWeek.Contains(date.DayOfWeek))
+                if (!daysOffInDataBase.Any(d => d.Date == dayOff.Date))
                 {
-                    ResultDates.Add(GetDateOnlyString(date));
+                    Context.DaysOff.Add(dayOff);
                 }
             }
 
-            dateList.ItemsSource = ResultDates;
-            copyDates.IsEnabled = true;
-        }
-
-        /// <summary>
-        /// Обработчик нажатия на клавишу копирования списка дат
-        /// </summary>
-        private void CopyDates_Click(object sender, RoutedEventArgs e)
-        {
-            var text = string.Empty;
-            foreach (var date in ResultDates)
-            {
-                text = $"{text}{date}\r\n";
-            }
-            Clipboard.SetText(text);
-        }
-
-        /// <summary>
-        /// Метод вызывающий диалоговое окно об ошибке,
-        /// в случае попытки получения списка дат при не выбранном(ых) значении границы календарного периода
-        /// </summary>
-        private void ShowEmptyDatesDialog()
-        {
-            var dateBoundaryForDialog = datePickerStart.SelectedDate is null
-                ? "начала"
-                : datePickerEnd.SelectedDate is null
-                    ? "окончания"
-                    : string.Empty;
-            DialogWindow.Show($"Не указана дата {dateBoundaryForDialog}!", "Ошибка", MessageBoxButton.OK);
-        }
-
-        /// <summary>
-        /// Метод вызывающий диалоговое окно об ошибке,
-        /// в случае попытки получения списка дат при не верно выбранных границах периода планирования
-        /// </summary>
-        private void ShowWrongPeriodDialog()
-        {
-            DialogWindow.Show($"Дата конца периода планирования не может опережать дату его начала. ", "Ошибка", MessageBoxButton.OK);
-        }
-
-        /// <summary>
-        /// Метод вызывающий диалоговое окно об ошибке,
-        /// в случае попытки получения списка дат при не выбранном(ых) днях недели
-        /// </summary>
-        private void ShowEmptyDaysOfWeekDialog()
-        {
-            DialogWindow.Show($"Не выбраны дни недели.", "Ошибка", MessageBoxButton.OK);
-        }
-
-        /// <summary>
-        /// Метод получения даты в виде строки в формате dd.MM.yyyy
-        /// </summary>
-        /// <param name="date">Дата</param>
-        /// <returns>Дата в строковом виде</returns>
-        private string GetDateOnlyString(DateTime date)
-        {
-            return date.Date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
-        }
-
-        /// <summary>
-        /// Обновление списка выбранных дней недели
-        /// </summary>
-        private void UpdateCheckedDaysOfWeekList()
-        {
-            DaysOfWeek.Clear();
-
-            if (mon.IsChecked == true)
-            {
-                DaysOfWeek.Add(DayOfWeek.Monday);
-            }
-
-            if (tue.IsChecked == true)
-            {
-                DaysOfWeek.Add(DayOfWeek.Tuesday);
-            }
-
-            if (wed.IsChecked == true)
-            {
-                DaysOfWeek.Add(DayOfWeek.Wednesday);
-            }
-
-            if (thur.IsChecked == true)
-            {
-                DaysOfWeek.Add(DayOfWeek.Thursday);
-            }
-
-            if (fri.IsChecked == true)
-            {
-                DaysOfWeek.Add(DayOfWeek.Friday);
-            }
-
-            if (sat.IsChecked == true)
-            {
-                DaysOfWeek.Add(DayOfWeek.Saturday);
-            }
+            Context.SaveChanges();
         }
 
         /// <summary>
@@ -227,28 +77,67 @@ namespace School_Teacher_Scheduler
         }
 
         /// <summary>
-        /// Генератор списка дат в заданном календарном промежутке
+        /// Обработчик события нажатия на кнопку меню 'Главная'
         /// </summary>
-        /// <param name="startDate">Дата начала интервала</param>
-        /// <param name="endDate">Дата окончания интервала</param>
-        /// <returns>Список дат</returns>
-        private static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
+        private void MainMenuButton_Click(object sender, RoutedEventArgs e)
         {
-            if (endDate < startDate)
+            MainControlRender();
+        }
+
+        /// <summary>
+        /// Обработчик события нажатия на кнопку меню 'Выходные'
+        /// </summary>
+        private void DaysOffMenuButton_Click(object sender, RoutedEventArgs e)
+        {
+            DayOffControlRender();
+        }
+
+        /// <summary>
+        /// Метод отрисовки MainControl в главном окне приложения
+        /// </summary>
+        private void MainControlRender()
+        {
+            if (MainTab.Items.Count > 0 && MainTab.SelectedContent.GetType().FullName == typeof(MainControl).ToString())
             {
-                DialogWindow.Show($"Дата окончания не может опережать дату начала!\r\n" +
-                            $"Дата начала: {DateOnly.FromDateTime(startDate)}\r\n" +
-                            $"Дата окончания: {DateOnly.FromDateTime(endDate)}",
-                            "Ошибка",
-                            MessageBoxButton.OK);
-                yield break;
+                return;
             }
 
-            while (startDate <= endDate)
+            if (Context is null)
             {
-                yield return startDate;
-                startDate = startDate.AddDays(1);
+                DialogWindow.Show($"Произошла ошибка работы с базой данных. Необходимо перезапустить программу.",
+                    "Ошибка",
+                    MessageBoxButton.OK);
+                return;
             }
+
+            MainTab.Items.Clear();
+            _tabUserPage = new TabItem { Content = new MainControl(Context) };
+            MainTab.Items.Add(_tabUserPage);
+            MainTab.Items.Refresh();
+        }
+
+        /// <summary>
+        /// Метод отрисовки DayOffControl в главном окне приложения
+        /// </summary>
+        private void DayOffControlRender()
+        {
+            if (MainTab.Items.Count > 0 && MainTab.SelectedContent.GetType().FullName == typeof(DayOffControl).ToString())
+            {
+                return;
+            }
+
+            if (Context is null)
+            {
+                DialogWindow.Show($"Произошла ошибка работы с базой данных. Необходимо перезапустить программу.",
+                    "Ошибка",
+                    MessageBoxButton.OK);
+                return;
+            }
+
+            MainTab.Items.Clear();
+            _tabUserPage = new TabItem { Content = new DayOffControl(Context) };
+            MainTab.Items.Add(_tabUserPage);
+            MainTab.Items.Refresh();
         }
     }
 }

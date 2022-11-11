@@ -68,7 +68,7 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик нажатия кнопки 'Ок'
         /// </summary>
-        private void OkButtonClick(object sender, RoutedEventArgs e)
+        private void OkButton_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = true;
             this.Close();
@@ -77,7 +77,7 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик нажатия кнопки 'Отмена'
         /// </summary>
-        private void CancelButtonClick(object sender, RoutedEventArgs e)
+        private void CancelButton_Click(object sender, RoutedEventArgs e)
         {
             this.DialogResult = false;
             this.Close();
@@ -86,8 +86,9 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик нажатия кнопки 'Да'
         /// </summary>
-        private void ConfirmButtonClick(object sender, RoutedEventArgs e)
+        private void ConfirmButton_Click(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = true;
             this.Close();
         }
 

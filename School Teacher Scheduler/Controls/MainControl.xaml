@@ -1,0 +1,95 @@
+﻿<UserControl x:Class="School_Teacher_Scheduler.MainControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:local="clr-namespace:School_Teacher_Scheduler"
+             mc:Ignorable="d"
+             d:DesignHeight="450" d:DesignWidth="800"
+              Style="{DynamicResource ControlStyle}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <Style TargetType="{x:Type Rectangle}" />
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Styles/MainControlStyle.XAML" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="7*" />
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="309*" />
+            <RowDefinition Height="26*" />
+        </Grid.RowDefinitions>
+        <Grid Grid.Column="0" Grid.Row="0" Margin="10,42,0,41">
+            <Grid HorizontalAlignment="Center" Height="152" VerticalAlignment="Center" Width="118">
+                <Grid HorizontalAlignment="Left" Height="196" VerticalAlignment="Top" Width="132" Margin="0,26,0,0">
+                    <CheckBox x:Name="mon" Content="Понедельник" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Verdana" />
+                    <CheckBox x:Name="tue" Content="Вторник" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" FontFamily="Verdana" />
+                    <CheckBox x:Name="wed" Content="Среда" HorizontalAlignment="Left" Margin="0,40,0,0" VerticalAlignment="Top" FontFamily="Verdana" />
+                    <CheckBox x:Name="thur" Content="Четверг" HorizontalAlignment="Left" Margin="0,60,0,0" VerticalAlignment="Top" FontFamily="Verdana" />
+                    <CheckBox x:Name="fri" Content="Пятница" HorizontalAlignment="Left" Margin="0,80,0,0" VerticalAlignment="Top" FontFamily="Verdana" />
+                    <CheckBox x:Name="sat" Content="Суббота" HorizontalAlignment="Left" Margin="0,100,0,0" VerticalAlignment="Top" FontFamily="Verdana" />
+                </Grid>
+                <TextBlock x:Name="days" Text="Дни недели:"
+                           Height="20" Width="106" FontFamily="Verdana"
+                           HorizontalAlignment="Left"  VerticalAlignment="Top"  TextWrapping="NoWrap" />
+            </Grid>
+        </Grid>
+        <Grid Grid.Column="1" Grid.Row="0" Margin="5,10,0,0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="79*" />
+                <RowDefinition Height="127*" />
+                <RowDefinition Height="93*" />
+            </Grid.RowDefinitions>
+            <DatePicker Name="datePickerStart" Grid.Row="0" Margin="142,6,20,28" Focusable="False"
+                        Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource MyCalendarStyle}">
+                <DatePicker.Resources>
+                    <Style TargetType="{x:Type DatePickerTextBox}">
+                        <EventSetter Event="MouseLeftButtonUp" Handler="StartDatePickerButton_Click" />
+                    </Style>
+                </DatePicker.Resources>
+            </DatePicker>
+            <DatePicker  x:Name="datePickerEnd" Grid.Row="0" Margin="142,37,20,3" Focusable="False"
+                         Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource MyCalendarStyle}">
+                <DatePicker.Resources>
+                    <Style TargetType="{x:Type DatePickerTextBox}">
+                        <EventSetter Event="UIElement.MouseLeftButtonUp" Handler="EndDatePickerButton_Click" />
+                    </Style>
+                </DatePicker.Resources>
+            </DatePicker>
+            <TextBlock x:Name="dateStart" Text="Дата начала:"
+                       Height="20" Width="96" FontFamily="Verdana"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="10,13,0,0" />
+            <TextBlock x:Name="dateEnd" Text="Дата окончания:"
+                       Height="20"  Width="114" FontFamily="Verdana"
+                       HorizontalAlignment="Left" VerticalAlignment="Top" TextWrapping="NoWrap" Margin="10,44,0,0" />
+            <ListBox x:Name="dateList"  Grid.Row="1"
+                     d:ItemsSource="{d:SampleData ItemCount=5}"
+                     Margin="10,10,25,10"
+                     Style="{DynamicResource MyListBoxStyle}" />
+            <Grid Grid.Row="2" Margin="0,3,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <Button x:Name="getDates" Content="Вывести список дат" Grid.Row="0"
+                        Height="28" Width="182" FontFamily="Verdana"
+                        Click="GetDatesButton_Click"
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
+                        RenderTransformOrigin="0.451,-0.266" Margin="-15,4,0,0" />
+                <Button x:Name="copyDates" Content="Копировать даты" Grid.Row="1"
+                        Height="28" Width="162" FontFamily="Verdana"
+                        Click="CopyDatesButton_Click" IsEnabled="False"
+                        HorizontalAlignment="Center" VerticalAlignment="Top"
+                        RenderTransformOrigin="0.488,-0.149" Margin="-15,5,0,0" />
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>
