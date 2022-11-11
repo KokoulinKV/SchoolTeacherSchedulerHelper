@@ -1,6 +1,5 @@
 ﻿using Domain;
 using Microsoft.EntityFrameworkCore;
-using Windows.Storage;
 
 namespace DAL
 {
@@ -27,7 +26,7 @@ namespace DAL
         /// <param name="optionsBuilder"></param>
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlite("Data Source =" + Path.Combine(ApplicationData.Current.LocalFolder.Path, "base.db"));
+            optionsBuilder.UseSqlite("Filename = base.db");
         }
     }
 }
