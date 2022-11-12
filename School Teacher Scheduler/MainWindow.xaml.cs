@@ -29,6 +29,8 @@ namespace School_Teacher_Scheduler
         /// </summary>
         private DatabaseContext? Context { get; set; }
 
+        private TabItem _tabUserPage;
+
         /// <summary>
         /// Конструктор главного окна приложения
         /// </summary>
@@ -40,6 +42,8 @@ namespace School_Teacher_Scheduler
 
             this.Context = new DatabaseContext();
             this.Context.Database.Migrate();
+
+            this.MainControlRender();
         }
 
         /// <summary>
@@ -54,14 +58,39 @@ namespace School_Teacher_Scheduler
             this.Close();
         }
 
-        private TabItem _tabUserPage;
-
-        private void Button_Click(object sender, RoutedEventArgs e)
+        private void ShowMainControl(object sender, RoutedEventArgs e)
         {
-            MainTab.Items.Clear(); //Clear previous Items in the user controls which is my tabItems
-            var userControls = new MainControl();
-            _tabUserPage = new TabItem { Content = userControls };
-            MainTab.Items.Add(_tabUserPage); // Add User Controls
+            MainControlRender();
+        }
+
+        private void ShowDayOffControl(object sender, RoutedEventArgs e)
+        {
+            DayOffControlRender();
+        }
+
+        private void MainControlRender()
+        {
+            if (MainTab.Items.Count > 0 && MainTab.SelectedContent.GetType().FullName == typeof(MainControl).ToString())
+            {
+                return;
+            }
+
+            MainTab.Items.Clear();
+            _tabUserPage = new TabItem { Content = new MainControl() };
+            MainTab.Items.Add(_tabUserPage);
+            MainTab.Items.Refresh();
+        }
+
+        private void DayOffControlRender()
+        {
+            if (MainTab.Items.Count > 0 && MainTab.SelectedContent.GetType().FullName == typeof(DayOffControl).ToString())
+            {
+                return;
+            }
+
+            MainTab.Items.Clear();
+            _tabUserPage = new TabItem { Content = new DayOffControl(this.Context) };
+            MainTab.Items.Add(_tabUserPage);
             MainTab.Items.Refresh();
         }
     }
