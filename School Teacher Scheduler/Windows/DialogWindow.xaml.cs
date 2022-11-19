@@ -88,6 +88,7 @@ namespace School_Teacher_Scheduler
         /// </summary>
         private void ConfirmButtonClick(object sender, RoutedEventArgs e)
         {
+            this.DialogResult = true;
             this.Close();
         }
 

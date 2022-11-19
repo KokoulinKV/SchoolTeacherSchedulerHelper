@@ -37,7 +37,7 @@
                     <ColumnDefinition Width="*"></ColumnDefinition>
                     <ColumnDefinition Width="*"></ColumnDefinition>
                 </Grid.ColumnDefinitions>
-                <Button Grid.Column="0" x:Name="yes" Content="Да"  Height="28" Width="162" HorizontalAlignment="Right" Click="CancelButtonClick" />
+                <Button Grid.Column="0" x:Name="yes" Content="Да"  Height="28" Width="162" HorizontalAlignment="Right" Click="ConfirmButtonClick" />
                 <Button Grid.Column="1" x:Name="cancel" Content="Отмена"  Height="28" Width="162" HorizontalAlignment="Left" Click="CancelButtonClick" />
             </Grid>
             <Button Grid.Row="1" x:Name="ok" Content="Ок" Visibility="Collapsed"  Height="28" Width="162" VerticalAlignment="Bottom" Click="OkButtonClick" />

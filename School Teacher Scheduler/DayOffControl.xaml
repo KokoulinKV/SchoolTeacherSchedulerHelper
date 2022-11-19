@@ -27,7 +27,7 @@
             <RowDefinition Height="2*" />
             <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
-        <TextBlock  Margin="0,0,25,0" HorizontalAlignment="Center"  TextWrapping="Wrap" Text="Праздничные дни" VerticalAlignment="Center" Grid.Column="0" Grid.Row="0" />
+        <TextBlock HorizontalAlignment="Center"  TextWrapping="Wrap" Text="Праздничные дни" VerticalAlignment="Center" />
         <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="3">
             <ListBox x:Name="dayOffDatesList" d:ItemsSource="{d:SampleData ItemCount=5}" Style="{DynamicResource MyListBoxStyle}" SelectionChanged="DayOffDatesList_SelectionChanged" />
         </Grid>

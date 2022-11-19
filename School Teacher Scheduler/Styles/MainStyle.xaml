@@ -237,7 +237,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="{x:Type Button}">
-                    <Border CornerRadius="0,0,20,20" >
+                    <Border x:Name="back"   CornerRadius="5">
                         <Border.Background>
                             <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
                                 <GradientStop Color="#2B313B" Offset="1" />
@@ -251,8 +251,62 @@
 
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="#fefff5" />
-                            <Setter Property="Foreground" Value="Black" />
+                            <Setter Property="Background"  TargetName="back">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
+                                        <GradientStop Color="#616161" Offset="1" />
+                                        <GradientStop Color="#181B21" Offset="0" />
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+
+                        <Trigger Property="IsPressed" Value="True">
+                            <Setter Property="Background" Value="#38b052" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                        <Trigger Property="IsEnabled"  Value="False">
+                            <Setter Property="Background" Value="#a3a3a3" />
+                            <Setter Property="Foreground" Value="White" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="MenuButton"  TargetType="{x:Type Button}">
+        <Setter Property="Background" Value="#373737" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="FontSize" Value="15" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type Button}">
+                    <Border x:Name="back"   CornerRadius="0,0,20,20">
+                        <Border.Background>
+                            <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
+                                <GradientStop Color="#2B313B" Offset="1" />
+                                <GradientStop Color="#181B21" Offset="0" />
+                            </LinearGradientBrush>
+                        </Border.Background>
+                        <Grid>
+                            <ContentPresenter x:Name="MyContentPresenter" Content="{TemplateBinding Content}"  HorizontalAlignment="Center" VerticalAlignment="Center"  Margin="8,3,8,3" />
+                        </Grid>
+                    </Border>
+
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background"  TargetName="back">
+                                <Setter.Value>
+                                    <LinearGradientBrush StartPoint="0.5,1" EndPoint="0.5,0">
+                                        <GradientStop Color="#616161" Offset="1" />
+                                        <GradientStop Color="#181B21" Offset="0" />
+                                    </LinearGradientBrush>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Foreground" Value="White" />
                         </Trigger>
 
                         <Trigger Property="IsPressed" Value="True">

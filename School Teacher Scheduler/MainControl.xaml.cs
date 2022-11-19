@@ -1,4 +1,7 @@
-﻿using System;
+﻿using DAL;
+using Domain;
+using Domain.Extensions;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -27,10 +30,13 @@ namespace School_Teacher_Scheduler
         /// </summary>
         private List<string> ResultDates = new();
 
-        public MainControl()
+        private DatabaseContext Context;
+
+        public MainControl(DatabaseContext context)
         {
             InitializeComponent();
 
+            Context = context;
             CheckBoxesDaysOfWeek = new List<CheckBox> { mon, tue, wed, thur, fri, sat };
         }
 
@@ -79,10 +85,21 @@ namespace School_Teacher_Scheduler
             ResultDates.Clear();
             copyDates.IsEnabled = false;
 
-            var allDatesInPeriod = GetDateRange(datePickerStart.SelectedDate.Value, datePickerEnd.SelectedDate.Value).ToList();
+            var allDatesInPeriod = GetDateRange(DateOnly.FromDateTime(datePickerStart.SelectedDate.Value), DateOnly.FromDateTime(datePickerEnd.SelectedDate.Value)).ToList();
             if (!allDatesInPeriod.Any())
             {
                 return;
+            }
+
+            var daysOff = Context.DaysOff.OrderBy(d => d.Date).ToList();
+
+            foreach (var dayOff in daysOff)
+            {
+                var inList = allDatesInPeriod.SingleOrDefault(d => d == dayOff.Date);
+                if (inList != default)
+                {
+                    allDatesInPeriod.Remove(inList);
+                }
             }
 
             foreach (var date in allDatesInPeriod)
@@ -94,7 +111,7 @@ namespace School_Teacher_Scheduler
             }
 
             dateList.ItemsSource = ResultDates;
-            copyDates.IsEnabled = true;
+            copyDates.IsEnabled = ResultDates.Any();
         }
 
         /// <summary>
@@ -147,9 +164,9 @@ namespace School_Teacher_Scheduler
         /// </summary>
         /// <param name="date">Дата</param>
         /// <returns>Дата в строковом виде</returns>
-        private string GetDateOnlyString(DateTime date)
+        private string GetDateOnlyString(DateOnly date)
         {
-            return date.Date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
+            return date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -196,13 +213,13 @@ namespace School_Teacher_Scheduler
         /// <param name="startDate">Дата начала интервала</param>
         /// <param name="endDate">Дата окончания интервала</param>
         /// <returns>Список дат</returns>
-        private static IEnumerable<DateTime> GetDateRange(DateTime startDate, DateTime endDate)
+        private static IEnumerable<DateOnly> GetDateRange(DateOnly startDate, DateOnly endDate)
         {
             if (endDate < startDate)
             {
                 DialogWindow.Show($"Дата окончания не может опережать дату начала!\r\n" +
-                            $"Дата начала: {DateOnly.FromDateTime(startDate)}\r\n" +
-                            $"Дата окончания: {DateOnly.FromDateTime(endDate)}",
+                            $"Дата начала: {startDate}\r\n" +
+                            $"Дата окончания: {endDate}",
                             "Ошибка",
                             MessageBoxButton.OK);
                 yield break;

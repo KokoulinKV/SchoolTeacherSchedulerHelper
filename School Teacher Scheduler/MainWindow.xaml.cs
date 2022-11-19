@@ -8,8 +8,8 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Input;
 using DAL;
-using Domain;
 using Domain.Dtos;
+using Domain.Factories;
 using Microsoft.EntityFrameworkCore;
 
 namespace School_Teacher_Scheduler
@@ -42,8 +42,25 @@ namespace School_Teacher_Scheduler
 
             this.Context = new DatabaseContext();
             this.Context.Database.Migrate();
+            this.CheckAndUpdateSystemDaysOff();
 
             this.MainControlRender();
+        }
+
+        private void CheckAndUpdateSystemDaysOff()
+        {
+            var daysOffInDataBase = Context.DaysOff.ToList();
+            var daysOffInFactory = DayOffFactory.GenerateDaysOffEntities();
+
+            foreach (var dayOff in daysOffInFactory)
+            {
+                if (!daysOffInDataBase.Any(d => d.Date == dayOff.Date))
+                {
+                    Context.DaysOff.Add(dayOff);
+                }
+            }
+
+            Context.SaveChanges();
         }
 
         /// <summary>
@@ -76,7 +93,7 @@ namespace School_Teacher_Scheduler
             }
 
             MainTab.Items.Clear();
-            _tabUserPage = new TabItem { Content = new MainControl() };
+            _tabUserPage = new TabItem { Content = new MainControl(Context) };
             MainTab.Items.Add(_tabUserPage);
             MainTab.Items.Refresh();
         }
@@ -89,7 +106,7 @@ namespace School_Teacher_Scheduler
             }
 
             MainTab.Items.Clear();
-            _tabUserPage = new TabItem { Content = new DayOffControl(this.Context) };
+            _tabUserPage = new TabItem { Content = new DayOffControl(Context) };
             MainTab.Items.Add(_tabUserPage);
             MainTab.Items.Refresh();
         }
