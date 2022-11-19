@@ -308,15 +308,6 @@
                             </Setter>
                             <Setter Property="Foreground" Value="White" />
                         </Trigger>
-
-                        <Trigger Property="IsPressed" Value="True">
-                            <Setter Property="Background" Value="#38b052" />
-                            <Setter Property="Foreground" Value="White" />
-                        </Trigger>
-                        <Trigger Property="IsEnabled"  Value="False">
-                            <Setter Property="Background" Value="#a3a3a3" />
-                            <Setter Property="Foreground" Value="White" />
-                        </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>

@@ -27,7 +27,7 @@
             <RowDefinition Height="2*" />
             <RowDefinition Height="2*" />
         </Grid.RowDefinitions>
-        <TextBlock HorizontalAlignment="Center"  TextWrapping="Wrap" Text="Праздничные дни" VerticalAlignment="Center" />
+        <TextBlock x:Name="listHeader" HorizontalAlignment="Center"  TextWrapping="Wrap" Text="Праздничные дни" VerticalAlignment="Center" TextAlignment ="Center"/>
         <Grid Grid.Column="0" Grid.Row="1" Grid.RowSpan="3">
             <ListBox x:Name="dayOffDatesList" d:ItemsSource="{d:SampleData ItemCount=5}" Style="{DynamicResource MyListBoxStyle}" SelectionChanged="DayOffDatesList_SelectionChanged" />
         </Grid>
@@ -40,7 +40,7 @@
             <DatePicker x:Name="datePickerDayOff" HorizontalAlignment="Right"  VerticalAlignment="Center" Grid.Row="0" Style="{DynamicResource MyDatePickerStyle}" CalendarStyle="{DynamicResource MyCalendarStyle}">
                 <DatePicker.Resources>
                     <Style TargetType="{x:Type DatePickerTextBox}">
-                        <EventSetter Event="UIElement.MouseLeftButtonUp" Handler="OnMouseLeftButtonUpNewDayOffDate" />
+                        <EventSetter Event="UIElement.MouseLeftButtonUp" Handler="DatePickerButton_Click" />
                     </Style>
                 </DatePicker.Resources>
             </DatePicker>

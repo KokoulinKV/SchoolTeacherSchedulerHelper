@@ -1,22 +1,12 @@
 ﻿using DAL;
-using Domain;
 using Domain.Dtos;
+using Domain.Entities.References;
 using Domain.Extensions;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace School_Teacher_Scheduler
 {
@@ -25,21 +15,42 @@ namespace School_Teacher_Scheduler
     /// </summary>
     public partial class DayOffControl : UserControl
     {
+        /// <summary>
+        /// Список DTO сущностей праздничного-выходного дня
+        /// </summary>
         private List<DayOffDto> dayOffs = new List<DayOffDto>();
+
+        /// <summary>
+        /// Контекст БД
+        /// </summary>
         private DatabaseContext Context;
 
+        /// <summary>
+        /// Дата начала текущего учебного года
+        /// </summary>
         private DateOnly StudyYearStartDate = new();
+
+        /// <summary>
+        /// Дата окончания текущего учебного года
+        /// </summary>
         private DateOnly StudyYearEndDate = new();
 
+        /// <summary>
+        /// Конструктор DayOffControl
+        /// </summary>
         public DayOffControl(DatabaseContext context)
         {
             InitializeComponent();
-            Context = context;
             InitializeStudyYear();
+
+            Context = context;
 
             DayOffDatesListRender();
         }
 
+        /// <summary>
+        /// Метод инициализации дат начала и конца текущего учебного года
+        /// </summary>
         private void InitializeStudyYear()
         {
             var today = DateOnly.FromDateTime(DateTime.Now);
@@ -48,8 +59,12 @@ namespace School_Teacher_Scheduler
 
             StudyYearStartDate = new DateOnly(yearOfStartStudyYear, 9, 1);
             StudyYearEndDate = new DateOnly(yearOfStartStudyYear + 1, 5, 31);
+            listHeader.Text = $"{listHeader.Text} в {StudyYearStartDate.Year}-{StudyYearEndDate.Year} учебном году";
         }
 
+        /// <summary>
+        /// Метод отрисовки списка праздничных дней
+        /// </summary>
         private void DayOffDatesListRender()
         {
             var allDaysOff = Context.DaysOff.OrderBy(d => d.Date);
@@ -68,11 +83,17 @@ namespace School_Teacher_Scheduler
             dayOffDatesList.ItemsSource = dayOffs.Select(d => d.DateString).ToList();
         }
 
-        private void OnMouseLeftButtonUpNewDayOffDate(object sender, RoutedEventArgs e)
+        /// <summary>
+        /// Обработчик события нажатия кнопки открытия календаря выбора даты праздничного-выходного дня
+        /// </summary>
+        private void DatePickerButton_Click(object sender, RoutedEventArgs e)
         {
             datePickerDayOff.IsDropDownOpen = true;
         }
 
+        /// <summary>
+        /// Обработчик события нажатия кнопки удаления даты праздничного-выходного дня из списка
+        /// </summary>
         private void DeleteDayOffButton_Click(object sender, RoutedEventArgs e)
         {
             var dayOff = dayOffs.SingleOrDefault(d => d.DateString == dayOffDatesList.SelectedItem.ToString());
@@ -102,10 +123,10 @@ namespace School_Teacher_Scheduler
                 return;
             }
 
-            var res = DialogWindow.Show($"Вы действительно хотите удалить дату {dayOffDatesList.SelectedItem} из списка выходных дней текущего {StudyYearStartDate.Year}-{StudyYearEndDate.Year} учебного года?",
+            var deleteDialogResult = DialogWindow.Show($"Вы действительно хотите удалить дату {dayOffDatesList.SelectedItem} из списка выходных дней текущего {StudyYearStartDate.Year}-{StudyYearEndDate.Year} учебного года?",
                             "Удаление",
                             MessageBoxButton.OKCancel);
-            if (res == true)
+            if (deleteDialogResult == true)
             {
                 Context.Remove(removingDayOff);
                 Context.SaveChanges();
@@ -114,12 +135,18 @@ namespace School_Teacher_Scheduler
             }
         }
 
+        /// <summary>
+        /// Обработчик события выбора элемента в списке дат праздничных-выходных дней
+        /// </summary>
         private void DayOffDatesList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (!deleteDayOffButton.IsEnabled)
                 deleteDayOffButton.IsEnabled = true;
         }
 
+        /// <summary>
+        /// Обработчик события нажатия кнопки добавления новой даты праздничного-выходного дня
+        /// </summary>
         private void AddDayOffButton_Click(object sender, RoutedEventArgs e)
         {
             if (datePickerDayOff.SelectedDate is null)

@@ -35,12 +35,12 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Button Grid.Row="1"  x:Name="MainControl" Click="ShowMainControl" Content="Главная" Style="{DynamicResource MenuButton}">
+                <Button Grid.Row="1"  x:Name="MainControl" Click="MainMenuButton_Click" Content="Главная" Style="{DynamicResource MenuButton}">
                     <Button.LayoutTransform>
                         <RotateTransform Angle="-90" />
                     </Button.LayoutTransform>
                 </Button>
-                <Button Grid.Row="3"  x:Name="DayOffControl" Click="ShowDayOffControl" Content="Выходные" Style="{DynamicResource MenuButton}">
+                <Button Grid.Row="3"  x:Name="DayOffControl" Click="DaysOffMenuButton_Click" Content="Выходные" Style="{DynamicResource MenuButton}">
                     <Button.LayoutTransform>
                         <RotateTransform Angle="-90" />
                     </Button.LayoutTransform>

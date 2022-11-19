@@ -1,22 +1,22 @@
 ﻿using Domain.Dtos;
 using System.ComponentModel.DataAnnotations;
 
-namespace Domain
+namespace Domain.Entities.References
 {
     /// <summary>
-    /// Класс сущности Выходной
+    /// Класс сущности праздничного-выходного дня
     /// </summary>
     public class DayOff
     {
         /// <summary>
-        /// Конструктор сущности Выходной
+        /// Конструктор сущности праздничного-выходного дня
         /// </summary>
-        /// <param name="date"></param>
+        /// <param name="dayOffDto">Dto сущности праздничного-выходного дня</param>
         public DayOff(DayOffDto dayOffDto)
         {
-            this.Id = Guid.NewGuid();
-            this.Date = dayOffDto.Date;
-            this.CreatedBySystem = dayOffDto.CreatedBySystem;
+            Id = Guid.NewGuid();
+            Date = dayOffDto.Date;
+            CreatedBySystem = dayOffDto.CreatedBySystem;
         }
 
         protected DayOff()
@@ -35,8 +35,9 @@ namespace Domain
         public DateOnly Date { get; private set; }
 
         /// <summary>
-        /// Выходной по календарю, а не добавленный из-за переноса
+        /// Признак создания праздничного-выходного дня системой
         /// </summary>
+        [Required]
         public bool CreatedBySystem { get; private set; }
     }
 }

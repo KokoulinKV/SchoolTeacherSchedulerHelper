@@ -1,6 +1,4 @@
 ﻿using DAL;
-using Domain;
-using Domain.Extensions;
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -30,8 +28,14 @@ namespace School_Teacher_Scheduler
         /// </summary>
         private List<string> ResultDates = new();
 
+        /// <summary>
+        /// Контекст БД
+        /// </summary>
         private DatabaseContext Context;
 
+        /// <summary>
+        /// Конструктор MainControl
+        /// </summary>
         public MainControl(DatabaseContext context)
         {
             InitializeComponent();
@@ -43,7 +47,7 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик события нажатия кнопки открытия календаря выбора даты начала
         /// </summary>
-        private void OnMouseLeftButtonUpDateStart(object sender, RoutedEventArgs e)
+        private void StartDatePickerButton_Click(object sender, RoutedEventArgs e)
         {
             datePickerStart.IsDropDownOpen = true;
         }
@@ -51,7 +55,7 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик события нажатия кнопки открытия календаря выбора даты окончания
         /// </summary>
-        private void OnMouseLeftButtonUpDateEnd(object sender, RoutedEventArgs e)
+        private void EndDatePickerButton_Click(object sender, RoutedEventArgs e)
         {
             datePickerEnd.IsDropDownOpen = true;
         }
@@ -59,20 +63,8 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик события нажатия кнопки получения списка дат
         /// </summary>
-        private void GetDates_Click(object sender, RoutedEventArgs e)
+        private void GetDatesButton_Click(object sender, RoutedEventArgs e)
         {
-            if (datePickerStart.SelectedDate is null || datePickerEnd.SelectedDate is null)
-            {
-                ShowEmptyDatesDialog();
-                return;
-            }
-
-            if (DateTime.Compare((DateTime)datePickerStart.SelectedDate, (DateTime)datePickerEnd.SelectedDate) > 0)
-            {
-                ShowWrongPeriodDialog();
-                return;
-            }
-
             UpdateCheckedDaysOfWeekList();
 
             if (!DaysOfWeek.Any())
@@ -81,26 +73,20 @@ namespace School_Teacher_Scheduler
                 return;
             }
 
-            dateList.ItemsSource = null;
-            ResultDates.Clear();
-            copyDates.IsEnabled = false;
+            List<DateOnly> allDatesInPeriod;
 
-            var allDatesInPeriod = GetDateRange(DateOnly.FromDateTime(datePickerStart.SelectedDate.Value), DateOnly.FromDateTime(datePickerEnd.SelectedDate.Value)).ToList();
-            if (!allDatesInPeriod.Any())
+            try
+            {
+                allDatesInPeriod = GetDateRange();
+            }
+            catch
             {
                 return;
             }
 
-            var daysOff = Context.DaysOff.OrderBy(d => d.Date).ToList();
-
-            foreach (var dayOff in daysOff)
-            {
-                var inList = allDatesInPeriod.SingleOrDefault(d => d == dayOff.Date);
-                if (inList != default)
-                {
-                    allDatesInPeriod.Remove(inList);
-                }
-            }
+            dateList.ItemsSource = null;
+            ResultDates.Clear();
+            copyDates.IsEnabled = false;
 
             foreach (var date in allDatesInPeriod)
             {
@@ -117,7 +103,7 @@ namespace School_Teacher_Scheduler
         /// <summary>
         /// Обработчик нажатия на клавишу копирования списка дат
         /// </summary>
-        private void CopyDates_Click(object sender, RoutedEventArgs e)
+        private void CopyDatesButton_Click(object sender, RoutedEventArgs e)
         {
             var text = string.Empty;
             foreach (var date in ResultDates)
@@ -125,48 +111,6 @@ namespace School_Teacher_Scheduler
                 text = $"{text}{date}\r\n";
             }
             Clipboard.SetText(text);
-        }
-
-        /// <summary>
-        /// Метод вызывающий диалоговое окно об ошибке,
-        /// в случае попытки получения списка дат при не выбранном(ых) значении границы календарного периода
-        /// </summary>
-        private void ShowEmptyDatesDialog()
-        {
-            var dateBoundaryForDialog = datePickerStart.SelectedDate is null
-                ? "начала"
-                : datePickerEnd.SelectedDate is null
-                    ? "окончания"
-                    : string.Empty;
-            DialogWindow.Show($"Не указана дата {dateBoundaryForDialog}!", "Ошибка", MessageBoxButton.OK);
-        }
-
-        /// <summary>
-        /// Метод вызывающий диалоговое окно об ошибке,
-        /// в случае попытки получения списка дат при не верно выбранных границах периода планирования
-        /// </summary>
-        private void ShowWrongPeriodDialog()
-        {
-            DialogWindow.Show($"Дата конца периода планирования не может опережать дату его начала. ", "Ошибка", MessageBoxButton.OK);
-        }
-
-        /// <summary>
-        /// Метод вызывающий диалоговое окно об ошибке,
-        /// в случае попытки получения списка дат при не выбранном(ых) днях недели
-        /// </summary>
-        private void ShowEmptyDaysOfWeekDialog()
-        {
-            DialogWindow.Show($"Не выбраны дни недели.", "Ошибка", MessageBoxButton.OK);
-        }
-
-        /// <summary>
-        /// Метод получения даты в виде строки в формате dd.MM.yyyy
-        /// </summary>
-        /// <param name="date">Дата</param>
-        /// <returns>Дата в строковом виде</returns>
-        private string GetDateOnlyString(DateOnly date)
-        {
-            return date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
         }
 
         /// <summary>
@@ -208,12 +152,90 @@ namespace School_Teacher_Scheduler
         }
 
         /// <summary>
+        /// Метод получения списка дат на выбранном промежутке с учетом праздничных дней
+        /// </summary>
+        /// <returns>Список дат на выбранном промежутке с учетом праздничных дней</returns>
+        private List<DateOnly> GetDateRange()
+        {
+            if (datePickerStart.SelectedDate is null || datePickerEnd.SelectedDate is null)
+            {
+                ShowEmptyDatesDialog();
+                throw new ArgumentNullException();
+            }
+
+            if (DateTime.Compare((DateTime)datePickerStart.SelectedDate, (DateTime)datePickerEnd.SelectedDate) > 0)
+            {
+                ShowWrongPeriodDialog();
+                throw new ArgumentException();
+            }
+
+            var allDatesInPeriod = GetAllDateRange(
+                DateOnly.FromDateTime(datePickerStart.SelectedDate.Value),
+                DateOnly.FromDateTime(datePickerEnd.SelectedDate.Value)).ToList();
+
+            var daysOff = Context.DaysOff.OrderBy(d => d.Date).ToList();
+
+            foreach (var dayOff in daysOff)
+            {
+                var inList = allDatesInPeriod.SingleOrDefault(d => d == dayOff.Date);
+                if (inList != default)
+                {
+                    allDatesInPeriod.Remove(inList);
+                }
+            }
+
+            return allDatesInPeriod;
+        }
+
+        /// <summary>
+        /// Метод получения даты в виде строки в формате dd.MM.yyyy
+        /// </summary>
+        /// <param name="date">Дата</param>
+        /// <returns>Дата в строковом виде</returns>
+        private string GetDateOnlyString(DateOnly date)
+        {
+            return date.ToString("dd.MM.yyyy", CultureInfo.InvariantCulture);
+        }
+
+        /// <summary>
+        /// Метод вызывающий диалоговое окно об ошибке,
+        /// в случае попытки получения списка дат при не выбранном(ых) значении границы календарного периода
+        /// </summary>
+        private void ShowEmptyDatesDialog()
+        {
+            var dateBoundaryForDialog = datePickerStart.SelectedDate is null
+                ? "начала"
+                : datePickerEnd.SelectedDate is null
+                    ? "окончания"
+                    : string.Empty;
+            DialogWindow.Show($"Не указана дата {dateBoundaryForDialog}!", "Ошибка", MessageBoxButton.OK);
+        }
+
+        /// <summary>
+        /// Метод вызывающий диалоговое окно об ошибке,
+        /// в случае попытки получения списка дат при не верно выбранных границах периода планирования
+        /// </summary>
+        private void ShowWrongPeriodDialog()
+        {
+            DialogWindow.Show($"Дата конца периода планирования не может опережать дату его начала. ", "Ошибка", MessageBoxButton.OK);
+        }
+
+        /// <summary>
+        /// Метод вызывающий диалоговое окно об ошибке,
+        /// в случае попытки получения списка дат при не выбранном(ых) днях недели
+        /// </summary>
+        private void ShowEmptyDaysOfWeekDialog()
+        {
+            DialogWindow.Show($"Не выбраны дни недели.", "Ошибка", MessageBoxButton.OK);
+        }
+
+        /// <summary>
         /// Генератор списка дат в заданном календарном промежутке
         /// </summary>
         /// <param name="startDate">Дата начала интервала</param>
         /// <param name="endDate">Дата окончания интервала</param>
         /// <returns>Список дат</returns>
-        private static IEnumerable<DateOnly> GetDateRange(DateOnly startDate, DateOnly endDate)
+        private static IEnumerable<DateOnly> GetAllDateRange(DateOnly startDate, DateOnly endDate)
         {
             if (endDate < startDate)
             {
