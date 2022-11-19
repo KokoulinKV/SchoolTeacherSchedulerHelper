@@ -17,15 +17,15 @@
     </UserControl.Resources>
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="143*" />
-            <ColumnDefinition Width="307*" />
+            <ColumnDefinition Width="3*" />
+            <ColumnDefinition Width="7*" />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
             <RowDefinition Height="309*" />
             <RowDefinition Height="26*" />
         </Grid.RowDefinitions>
         <Grid Grid.Column="0" Grid.Row="0" Margin="10,42,0,41">
-            <Grid HorizontalAlignment="Center" Height="152" VerticalAlignment="Center" Width="119">
+            <Grid HorizontalAlignment="Center" Height="152" VerticalAlignment="Center" Width="118">
                 <Grid HorizontalAlignment="Left" Height="196" VerticalAlignment="Top" Width="132" Margin="0,26,0,0">
                     <CheckBox x:Name="mon" Content="Понедельник" HorizontalAlignment="Left" VerticalAlignment="Top" FontFamily="Verdana" />
                     <CheckBox x:Name="tue" Content="Вторник" HorizontalAlignment="Left" Margin="0,20,0,0" VerticalAlignment="Top" FontFamily="Verdana" />

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Domain.Dtos;
+using System.ComponentModel.DataAnnotations;
 
 namespace Domain
 {
@@ -11,10 +12,11 @@ namespace Domain
         /// Конструктор сущности Выходной
         /// </summary>
         /// <param name="date"></param>
-        public DayOff(DateTime date)
+        public DayOff(DayOffDto dayOffDto)
         {
             this.Id = Guid.NewGuid();
-            this.Date = DateOnly.FromDateTime(date);
+            this.Date = dayOffDto.Date;
+            this.CreatedBySystem = dayOffDto.CreatedBySystem;
         }
 
         protected DayOff()
@@ -24,12 +26,17 @@ namespace Domain
         /// Id записи
         /// </summary>
         [Required]
-        public Guid Id { get; set; }
+        public Guid Id { get; private set; }
 
         /// <summary>
         /// Дата выходного
         /// </summary>
         [Required]
-        public DateOnly Date { get; set; }
+        public DateOnly Date { get; private set; }
+
+        /// <summary>
+        /// Выходной по календарю, а не добавленный из-за переноса
+        /// </summary>
+        public bool CreatedBySystem { get; private set; }
     }
 }
